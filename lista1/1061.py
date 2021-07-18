@@ -47,6 +47,7 @@ def build_bloodtype_string(bloodtype_tuple):
 
 def format_solution(bloodtype_tuple_list):
     if len(bloodtype_tuple_list) == 0: return "IMPOSSIBLE"
+    if len(bloodtype_tuple_list) == 1: return build_bloodtype_string(bloodtype_tuple_list[0])
     formatted = "{"
     for tp in bloodtype_tuple_list:
         formatted += build_bloodtype_string(tp)+', '
@@ -58,15 +59,15 @@ def format_solution(bloodtype_tuple_list):
 def solve(p1=None, p2=None, ch=None):
     if ch is None:
         solution = format_solution(solve_for_child(p1, p2))
-        return f"{build_bloodtype_string(p1)} {build_bloodtype_string(p2)} {solution}"
+        return "{} {} {}".format(build_bloodtype_string(p1), build_bloodtype_string(p2), solution)
     elif p1 is None:
         solution = format_solution(solve_for_parent(p2, ch))
-        return f"{solution} {build_bloodtype_string(p2)} {build_bloodtype_string(ch)}"
+        return "{} {} {}".format(solution, build_bloodtype_string(p2), build_bloodtype_string(ch))
     elif p2 is None:  
         solution = format_solution(solve_for_parent(p1, ch))
-        return f"{build_bloodtype_string(p1)} {solution} {build_bloodtype_string(ch)}"
+        return "{} {} {}".format(build_bloodtype_string(p1), solution, build_bloodtype_string(ch))
     else:
-        return f"{p1} {p1} {ch}"
+        return "{} {} {}".format(build_bloodtype_string(p1),build_bloodtype_string(p2),build_bloodtype_string(ch))
 
 def solve_for_child(p1, p2):
     p1_type, p1_rh = p1[0], p1[1]
@@ -111,15 +112,14 @@ def solve_for_parent(p, ch):
 
     return list(itertools.product(possible_parent_alleles, possible_parent_rh))
 
-if __name__ == '__main__':
-    count = 1
-    while True:
-        line = input()
-        if line == "": continue
-        
-        tokens = re.findall('([^\s]+)', line)
-        if " ".join(tokens) == "E N D": break
-        
-        case=map(build_bloodtype_tuple, tokens)
-        print(f"Case {count}: {solve(*case)}")
-        count += 1
+count = 1
+while True:
+    line = input()
+    if line == "": continue
+
+    tokens = re.findall('([^\s]+)', line)
+    if " ".join(tokens) == "E N D": break
+    
+    case=map(build_bloodtype_tuple, tokens)
+    print("Case {}: {}".format(count, solve(*case)))
+    count += 1
