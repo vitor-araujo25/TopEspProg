@@ -1,5 +1,6 @@
 import math
 import itertools
+import re
 
 possible_alleles= {
     'A': [('A','A'), ('A','O')],
@@ -61,9 +62,11 @@ def solve(p1=None, p2=None, ch=None):
     elif p1 is None:
         solution = format_solution(solve_for_parent(p2, ch))
         return f"{solution} {build_bloodtype_string(p2)} {build_bloodtype_string(ch)}"
-    else:  
+    elif p2 is None:  
         solution = format_solution(solve_for_parent(p1, ch))
         return f"{build_bloodtype_string(p1)} {solution} {build_bloodtype_string(ch)}"
+    else:
+        return f"{p1} {p1} {ch}"
 
 def solve_for_child(p1, p2):
     p1_type, p1_rh = p1[0], p1[1]
@@ -85,20 +88,38 @@ def solve_for_child(p1, p2):
 
 
 def solve_for_parent(p, ch):
-    print(f"solving for parent with child: {ch} and parent: {p}")
     p_type, p_rh = p[0], p[1]
     ch_type, ch_rh = ch[0], ch[1]
 
+    possible_parent_alleles = set()
+    p_alleles = possible_alleles[p_type]
+    all_parents = list(allele_dict.keys())
+    possible_couples_al = set(itertools.product(p_alleles, all_parents))
+    
+    for couple in possible_couples_al:
+        if ch_type in set(map(translate_allele, set(itertools.product(couple[0], couple[1])))):
+            possible_parent_alleles.add(translate_allele(couple[1]))
 
+    possible_parent_rh = set()
+    p_rh_alleles = possible_rh[p_rh]
+    all_parents_rh = list(rh_dict.keys())
+    possible_couples_rh = set(itertools.product(p_rh_alleles, all_parents_rh))
+    
+    for couple in possible_couples_rh:
+        if ch_rh in set(map(translate_rh, set(itertools.product(couple[0], couple[1])))):
+            possible_parent_rh.add(translate_rh(couple[1]))
+
+    return list(itertools.product(possible_parent_alleles, possible_parent_rh))
 
 if __name__ == '__main__':
     count = 1
     while True:
         line = input()
-        if line == "E N D":
-            break
+        if line == "": continue
         
-        tokens =line.split(" ")
+        tokens = re.findall('([^\s]+)', line)
+        if " ".join(tokens) == "E N D": break
+        
         case=map(build_bloodtype_tuple, tokens)
         print(f"Case {count}: {solve(*case)}")
         count += 1
