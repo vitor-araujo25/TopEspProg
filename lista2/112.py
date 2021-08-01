@@ -1,42 +1,64 @@
-#Tree Summing
+import re
+from sys import stdin
 
-from typing import Generator, Tuple
+class Node:
+  def __init__(self):
+    self.left = None
+    self.right = None
+    self.has_value = False
+    self.value = None
 
+def tree_from_s_expr(source):
+  number_or_symbol = re.compile('(-*\d+|[^ 0-9\n])')
+  root = None
+  target = None
+  nodes = []
+  tokens = re.findall(number_or_symbol, source)
+  for token in tokens:
+    if token == "(":
+      n = Node()
+      if len(nodes) > 0:
+        if nodes[-1].left == None: 
+          nodes[-1].left = n
+        else:
+          nodes[-1].right = n
+      else:
+        root = n
+      nodes.append(n)
+    elif token == ")":
+      nodes.pop()
+      if len(nodes) == 0:
+        yield target, root
+        root = None
+        target = None
+    else:
+      if len(nodes) == 0:
+        target = int(token)
+      else:
+        nodes[-1].value = int(token)
+        nodes[-1].has_value = True
+  return
 
-SUCCESS_STRING = "yes"
-FAILURE_STRING = "no"
-
-def evaluate(sum, tree):
-    pass
-
-def parse(full_input: str): # -> Generator[Tuple[int, str]]:
-    full_input = full_input.strip().split(" ")
-    full_input = [c for c in full_input if c != ""]
-    full_input = "".join(full_input)
-    print(full_input)
-    # for c in full_input:
-    #     if c != 
-
-
-
-
-
+def sum_path_exists(root, current, target):
+  total = current
+  if not root:
+    return False
+  if root.has_value:
+    total += root.value
+    
+    # if leaf
+    if root.left.has_value == root.right.has_value == False:
+      return total == target
+    
+    if sum_path_exists(root.left, total, target):
+      return True
+    return sum_path_exists(root.right, total, target)
+    
 def main():
-    full_input = ""
-    try:
-        while True:
-            input_string = input()
-            full_input += input_string            
-    except EOFError:
-        pass
-
-    parsed_cases = parse(full_input)
-    # for goal, tree in parsed_cases:
-    #     result = evaluate(goal, tree)
-    #     if result:
-    #         print(SUCCESS_STRING)
-    #     else:
-    #         print(FAILURE_STRING)
+    inp = "".join([l for l in stdin])
+    for target, root in tree_from_s_expr(inp):
+        print("yes" if sum_path_exists(root, 0, target) else "no")
 
 if __name__ == "__main__":
-    main()
+    main()    
+
