@@ -9,6 +9,8 @@ def evaluate(token_tree):
     found_paths = set()
     levels = defaultdict(list)
     for token in token_tree:
+        if token == '':
+            continue
         node = PATTERN.findall(token)[0] # tupla ('num','pos?')
         path = node[1]
         if path in found_paths:
