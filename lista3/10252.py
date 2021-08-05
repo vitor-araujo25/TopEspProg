@@ -1,3 +1,5 @@
+#Common Permutations
+
 def solve(a, b):
     if a == "" or b == "":
         return ""
