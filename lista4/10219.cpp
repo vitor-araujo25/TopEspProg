@@ -6,7 +6,7 @@ double Solve(long long n, long long p) {
     long long i, denominator = 1, max_element;
     double sum;
     sum = 0;
-    max_element = std::max({p,n-p}); // p>(n-p)?p:n-p;
+    max_element = std::max({p,n-p});
     for(i = max_element+1; i<=n; i++) {
         sum += log10((double)i/(double)denominator);
         denominator++;
