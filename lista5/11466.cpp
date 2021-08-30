@@ -2,6 +2,9 @@
 #include <vector>
 #include <cstring>
 #include <math.h>
+#include <algorithm>
+
+using namespace std;
 
 #define MAX 10000000
 
@@ -13,11 +16,11 @@
 
 int primePositions[SIEVE_SIZE];
 
-std::vector<int> primes;
+vector<int> primes{2};
 
 void sieve()
 {
-    int position = 0, idx_i, idx_j;
+    int position = 1, idx_i, idx_j;
     int i;
     for (i = 3; i*i <= MAX; i+=2)
     {   
@@ -66,23 +69,23 @@ int main(int argc, char const *argv[])
 
         input = input < 0 ? -input : input; 
 
-        if(input == 2 || input == 1)
+        if(input == 1)
         {
             printf("-1\n");
         }
         else
         {
             int i;
-            int largest = -1;
+            long long largest = 2;
             int count = 0;
-            if(input % 2 == 0)
-            {
-                for(; input % 2 == 0; input /= 2)
-                {
-                    largest = 2;
-                    count++;
-                }
-            }
+            // if(input % 2 == 0)
+            // {
+            //     for(; input % 2 == 0; input /= 2)
+            //     {
+            //         largest = 2;
+            //         count++;
+            //     }
+            // }
 
             for (i = 0; i < primes.size() && primes[i] <= input; i++)
             {
@@ -93,13 +96,19 @@ int main(int argc, char const *argv[])
                 }
             }
 
-            if(count == 1)
+            if(input > primes[primes.size()-1] || primePositions[naturalToSieveIndex(input)] != -1)
+            {
+                count++;
+                largest = max(input, largest);
+            }
+
+            if(count < 2)
             {
                 printf("-1\n");
             }
             else
             {
-                printf("%d\n", largest);
+                printf("%lld\n", largest);
             }
         }     
          
